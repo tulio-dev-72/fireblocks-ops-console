@@ -138,7 +138,7 @@ export default function Home() {
         {Header}
         <div className="setup">
           <h2>Connect your Fireblocks sandbox</h2>
-          <p>This console talks to the real Fireblocks core API. Credentials live only on the server — never sent to the browser.</p>
+          <p>This console talks to the real Fireblocks core API. Credentials live only on the server, never sent to the browser.</p>
           <ol>
             <li>Copy <code>.env.local.example</code> to <code>.env.local</code>.</li>
             <li>Set <code>FIREBLOCKS_API_KEY</code> to your sandbox API user key.</li>
@@ -159,17 +159,17 @@ export default function Home() {
       <div className="intro page-enter">
         <p className="intro-lead">
           A custody operations console wired straight to the <strong>Fireblocks core API</strong>.
-          Every vault, balance, and transfer here is live — the app submits transactions, but
+          Every vault, balance, and transfer here is live. The app submits transactions, but
           Fireblocks itself governs them.
         </p>
         <div className="intro-values">
           <div className="iv">
             <div className="iv-h">MPC-secured keys</div>
-            <div className="iv-b">Assets are protected by multi-party computation — no single private key ever exists to be stolen or leaked.</div>
+            <div className="iv-b">Assets are protected by multi-party computation. No single private key ever exists to be stolen or leaked.</div>
           </div>
           <div className="iv">
             <div className="iv-h">Policy-governed</div>
-            <div className="iv-b">The Transaction Authorization Policy approves, holds, or blocks every transfer at the platform layer — not in this app.</div>
+            <div className="iv-b">The Transaction Authorization Policy approves, holds, or blocks every transfer at the platform layer, not in this app.</div>
           </div>
           <div className="iv">
             <div className="iv-h">One API, many chains</div>
@@ -180,19 +180,19 @@ export default function Home() {
 
       <div className="stats page-enter">
         <div className="stat">
-          <div className="stat-num">{loadingV ? "—" : stats.vaults}</div>
+          <div className="stat-num">{loadingV ? "-" : stats.vaults}</div>
           <div className="stat-label">Vault accounts</div>
         </div>
         <div className="stat">
-          <div className="stat-num">{loadingV ? "—" : stats.funded}</div>
+          <div className="stat-num">{loadingV ? "-" : stats.funded}</div>
           <div className="stat-label">Funded vaults</div>
         </div>
         <div className="stat">
-          <div className={`stat-num ${stats.pending > 0 ? "accent" : ""}`}>{loadingT ? "—" : stats.pending}</div>
+          <div className={`stat-num ${stats.pending > 0 ? "accent" : ""}`}>{loadingT ? "-" : stats.pending}</div>
           <div className="stat-label">Pending approval</div>
         </div>
         <div className="stat">
-          <div className="stat-num">{loadingV ? "—" : stats.assets}</div>
+          <div className="stat-num">{loadingV ? "-" : stats.assets}</div>
           <div className="stat-label">Assets tracked</div>
         </div>
       </div>

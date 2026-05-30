@@ -19,7 +19,7 @@ const mono = Spline_Sans_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Custody Ops Console — Fireblocks",
+  title: "Custody Ops Console · Fireblocks",
   description:
     "Live custody operations against the Fireblocks core API: vaults, governed transfers, and transaction lifecycle.",
 };

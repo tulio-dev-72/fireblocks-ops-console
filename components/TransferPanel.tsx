@@ -130,7 +130,7 @@ export default function TransferPanel({
       <div className="field" style={{ marginTop: 16 }}>
         <label>Asset</label>
         <select className="select" value={asset} disabled={!source} onChange={(e) => setAsset(e.target.value)}>
-          {srcAssets.length === 0 && <option value="">— pick a source vault first —</option>}
+          {srcAssets.length === 0 && <option value="">Pick a source vault first</option>}
           {srcAssets.map((a) => (
             <option key={a.id} value={a.id}>{assetTicker(a.id)} · {fmtNum(a.total)} available</option>
           ))}
@@ -153,9 +153,9 @@ export default function TransferPanel({
       {result.kind === "ok" && (
         <div className={`note ${HOLD.includes(result.status) ? "hold" : "ok"}`}>
           {HOLD.includes(result.status) ? (
-            <>Accepted &amp; held by policy — <strong>{result.status}</strong>. Approve it in the Fireblocks Console.</>
+            <>Accepted and held by policy: <strong>{result.status}</strong>. Approve it in the Fireblocks Console.</>
           ) : (
-            <>Submitted — <strong>{result.status}</strong>.</>
+            <>Submitted: <strong>{result.status}</strong>.</>
           )}
           <br />
           <span className="mono" style={{ fontSize: 11 }}>{result.id}</span>

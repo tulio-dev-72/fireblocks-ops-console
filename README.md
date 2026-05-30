@@ -3,7 +3,7 @@
 A real custody-operations console wired directly to the **Fireblocks core API**.
 It lists the live vault accounts in your sandbox workspace, lets you initiate
 transfers (vault → vault or vault → external address), and tracks each
-transaction through the **real Fireblocks lifecycle** — including holds created
+transaction through the **real Fireblocks lifecycle**, including holds created
 by your **Transaction Authorization Policy (TAP)**.
 
 Unlike a front-end demo, this app actually drives the platform: every vault and
@@ -13,19 +13,19 @@ Fireblocks transaction governed by your policies.
 ## Why this is the "real" one
 
 - It calls the Fireblocks core API (`@fireblocks/ts-sdk`), authenticated with
-  JWT signatures from your **RSA secret key** — exactly how production
+  JWT signatures from your **RSA secret key**, exactly how production
   integrations work.
 - The secret never touches the browser. All Fireblocks calls run in **server-side
   API routes** (`app/api/*`, Node runtime). The client only talks to those
   routes.
 - It connects to the **same sandbox** where your vaults, tokens, and TAP rules
-  already live — so it operates the infrastructure you built, not a toy copy.
+  already live, so it operates the infrastructure you built, not a toy copy.
 
 ## Security model (read this)
 
 This app holds **no secret in client code**. You provide credentials server-side:
 
-- `FIREBLOCKS_API_KEY` — your sandbox API user key (UUID).
+- `FIREBLOCKS_API_KEY`: your sandbox API user key (UUID).
 - Your **RSA private key**, provided either as a `fireblocks_secret.key` file at
   the project root (gitignored) or pasted into `FIREBLOCKS_SECRET_KEY`.
 
@@ -64,7 +64,7 @@ Open http://localhost:3000. If credentials resolve, the header shows
 4. **The money shot:** if a TAP rule requires approval, the transfer is *accepted
    but held* in `PENDING_AUTHORIZATION`. The console says so explicitly. Approve
    it in the Fireblocks Console and watch it proceed. That hold is the proof the
-   platform — not the app — is enforcing governance.
+   platform, not the app, is enforcing governance.
 
 Whether a transfer auto-completes or pauses for approval depends on the API
 user's role and your TAP policy. That's the point: the app submits; Fireblocks
@@ -75,11 +75,11 @@ governs.
 1. Push to GitHub, import in Vercel.
 2. Add env vars in project settings:
    - `FIREBLOCKS_API_KEY`
-   - `FIREBLOCKS_SECRET_KEY` — paste the full PEM as **one line with `\n`** between
+   - `FIREBLOCKS_SECRET_KEY`: paste the full PEM as **one line with `\n`** between
      lines (Vercel env vars are single-line). The app converts `\n` back to real
      newlines.
    - `FIREBLOCKS_ENV=sandbox`, `NEXT_PUBLIC_DEFAULT_ASSET=AMOY_POLYGON_TEST`
-   - `APP_ACCESS_USER` and `APP_ACCESS_PASSWORD` — **required for a public URL.**
+   - `APP_ACCESS_USER` and `APP_ACCESS_PASSWORD`: **required for a public URL.**
      This app authenticates as you, so without a gate anyone with the link can
      operate your sandbox vaults. Setting these puts a password in front of the
      whole app (including the API). Share the URL + password only with people you
@@ -118,4 +118,4 @@ lib/
   `npm install` for the live build.
 - This is sandbox-only by design. Pointing it at a production workspace pulls in
   real custody, approver quorums, and compliance you don't want for a portfolio
-  piece — the `FIREBLOCKS_ENV` switch exists but keep it on `sandbox`.
+  piece. The `FIREBLOCKS_ENV` switch exists but keep it on `sandbox`.

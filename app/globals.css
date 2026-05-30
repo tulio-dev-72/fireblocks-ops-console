@@ -107,7 +107,7 @@ body {
   font-family: var(--font-mono), monospace;
   font-size: 11px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--muted); font-weight: 500;
 }
-.section-h h2::before { content: "— "; color: var(--vermilion); }
+.section-h h2::before { content: "› "; color: var(--vermilion); }
 .section-h .meta { font-family: var(--font-mono), monospace; font-size: 11px; color: var(--faint); }
 .refresh {
   background: none; border: none; color: var(--vermilion); font-size: 12px; cursor: pointer;
@@ -291,7 +291,7 @@ body {
   font-family: var(--font-mono), monospace; font-size: 10px; letter-spacing: 1.2px;
   text-transform: uppercase; color: var(--muted); margin: 0 2px 11px;
 }
-.mini-label::before { content: "— "; color: var(--vermilion); }
+.mini-label::before { content: "› "; color: var(--vermilion); }
 .asset-summary { display: flex; gap: 11px; flex-wrap: wrap; margin-bottom: 26px; }
 .asset-tile {
   background: var(--surface); border: 1px solid var(--hair); border-radius: 12px;

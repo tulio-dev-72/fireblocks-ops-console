@@ -52,7 +52,7 @@ export default function TxFeed({ txs, loading }: { txs: Tx[]; loading: boolean }
             <span className={`status-pill s-${b}`}>{t.status.replace(/_/g, " ")}</span>
             <div className="tx-mid">
               <div className="tx-route">
-                {t.sourceName ?? "—"} <span className="arr">→</span> {t.destName ?? "—"}
+                {t.sourceName ?? "-"} <span className="arr">→</span> {t.destName ?? "-"}
               </div>
               <div className="tx-sub">
                 {t.subStatus ? `${t.subStatus} · ` : ""}

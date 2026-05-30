@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 // Lightweight access gate for public deployments.
 //
 // If APP_ACCESS_USER and APP_ACCESS_PASSWORD are set (e.g. on Vercel), the whole
-// app — including the /api routes that can move funds — requires HTTP Basic Auth.
+// app, including the /api routes that can move funds, requires HTTP Basic Auth.
 // If they're unset (e.g. local dev), the gate is disabled so nothing is blocked.
 export function middleware(req: NextRequest) {
   const user = process.env.APP_ACCESS_USER;

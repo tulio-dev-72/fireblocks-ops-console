@@ -28,7 +28,7 @@ export default function VaultGrid({
   onPickTargeted: (id: string) => void;
 }) {
   const [q, setQ] = useState("");
-  const [hideEmpty, setHideEmpty] = usePersistentState("coc:hideEmpty", false);
+  const [hideEmpty, setHideEmpty] = usePersistentState("coc:hideEmpty2", true);
   const [sort, setSort] = usePersistentState<"id" | "name" | "balance">("coc:sort", "id");
   const [collapsed, setCollapsed] = usePersistentState<Record<string, boolean>>("coc:collapsed", {});
 
@@ -123,7 +123,7 @@ export default function VaultGrid({
         </div>
       ) : (
         <div className="pick-hint">
-          Set a transfer end with a card&rsquo;s <strong>source</strong> / <strong>dest</strong> buttons — or click
+          Set a transfer end with a card&rsquo;s <strong>source</strong> / <strong>dest</strong> buttons, or click
           &ldquo;pick from cards&rdquo; in the transfer panel, then click a card.
         </div>
       )}
