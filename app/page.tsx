@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { type Vault, type Tx } from "@/lib/types";
 import VaultGrid from "@/components/VaultGrid";
 import TransferPanel from "@/components/TransferPanel";
@@ -19,6 +19,22 @@ type WebhookEvent = {
   method: "v2" | "v1" | "skipped" | null;
   receivedAt: string;
 };
+
+// How recent a verified delivery must be for the receiver to read as "live".
+const WEBHOOK_LIVE_WINDOW_MS = 120_000;
+
+function relTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  if (!Number.isFinite(diff) || diff < 0) return "just now";
+  const s = Math.floor(diff / 1000);
+  if (s < 5) return "just now";
+  if (s < 60) return `${s}s ago`;
+  const m = Math.floor(s / 60);
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.floor(h / 24)}d ago`;
+}
 
 function Mark() {
   return (
@@ -112,6 +128,24 @@ export default function Home() {
     return () => clearInterval(id);
   }, [health, loadTxs, loadWebhookEvents]);
 
+  // Webhook-driven: a freshly verified delivery pushes an immediate refresh of
+  // transactions and balances, rather than waiting for the next poll tick. The
+  // 6s poll above only exists as a fallback for missed/dropped deliveries.
+  const lastSeenWebhookId = useRef<string | null>(null);
+  useEffect(() => {
+    const latest = webhookEvents[0]?.id ?? null;
+    if (!latest) return;
+    if (lastSeenWebhookId.current === null) {
+      lastSeenWebhookId.current = latest; // prime on first load; don't refresh
+      return;
+    }
+    if (latest !== lastSeenWebhookId.current) {
+      lastSeenWebhookId.current = latest;
+      loadTxs();
+      loadVaults();
+    }
+  }, [webhookEvents, loadTxs, loadVaults]);
+
   const stats = useMemo(() => {
     const assets = new Set<string>();
     vaults.forEach((v) => v.assets.forEach((a) => assets.add(a.id)));
@@ -119,6 +153,11 @@ export default function Home() {
     const pending = txs.filter((t) => t.status.toUpperCase().startsWith("PENDING")).length;
     return { vaults: vaults.length, funded, assets: assets.size, pending };
   }, [vaults, txs]);
+
+  const lastWebhook = webhookEvents[0];
+  const webhookLive = lastWebhook
+    ? Date.now() - new Date(lastWebhook.receivedAt).getTime() < WEBHOOK_LIVE_WINDOW_MS
+    : false;
 
   // Direct: a card's "source"/"dest" button sets that role (no modes).
   const chooseSource = (id: string) => {
@@ -161,10 +200,14 @@ export default function Home() {
           label="What does Connected mean?"
           content="Whether this server has a live link to the Fireblocks core API. Credentials live only on the server and are never sent to the browser. When connected, everything shown is read live from Fireblocks."
         />
-        <span className="chip">Webhooks v2</span>
+        <span className="chip">
+          <span className={`dot ${webhookLive ? "live" : "idle"}`} />
+          Webhooks v2
+          {lastWebhook ? <span className="chip-sub">{relTime(lastWebhook.receivedAt)}</span> : <span className="chip-sub">awaiting</span>}
+        </span>
         <InfoTip
           label="What is the Webhooks v2 receiver?"
-          content="This console exposes POST /api/webhooks/fireblocks, a real Fireblocks Webhooks v2 receiver. It validates the Fireblocks-Webhook-Signature (a detached JWS) against the environment JWKS, with the legacy RSA-SHA512 signature as a fallback. Verified deliveries appear in the Activity tab."
+          content="This console exposes POST /api/webhooks/fireblocks, a real Fireblocks Webhooks v2 receiver. It validates the Fireblocks-Webhook-Signature (a detached JWS) against the environment JWKS, with the legacy RSA-SHA512 signature as a fallback. The dot turns green when a verified delivery has arrived recently, and each delivery pushes an immediate refresh of transactions and balances. Verified deliveries appear in the Activity tab."
         />
       </div>
     </div>
@@ -291,7 +334,9 @@ export default function Home() {
                 {loadingV ? "loading…" : "refresh"}
               </button>
             )}
-            {tab === "activity" && <span className="tab-right meta">auto · 6s</span>}
+            {tab === "activity" && (
+              <span className="tab-right meta">{webhookLive ? "live · webhook-driven" : "auto · 6s"}</span>
+            )}
           </div>
 
           {tab === "vaults" ? (
