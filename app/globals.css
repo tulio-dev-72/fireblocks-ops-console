@@ -478,3 +478,29 @@ body {
 .vault.pickable { cursor: pointer; }
 .vault.pickable.pick-source:hover { border-color: var(--vermilion); box-shadow: 0 0 0 3px rgba(255, 93, 59, 0.14); }
 .vault.pickable.pick-dest:hover { border-color: var(--jade); box-shadow: 0 0 0 3px rgba(111, 176, 151, 0.14); }
+
+/* ── verified webhook delivery feed (Webhooks v2) ── */
+.webhook-feed {
+  margin: 0 2px 14px; padding: 12px 14px; border-radius: 10px;
+  border: 1px solid var(--hair); background: var(--surface);
+}
+.webhook-feed-head {
+  display: flex; align-items: center; gap: 7px; margin-bottom: 10px;
+  font-family: var(--font-mono), monospace; font-size: 11px; letter-spacing: 0.6px;
+  text-transform: uppercase; color: var(--ink-dim);
+}
+.webhook-row {
+  display: flex; align-items: center; gap: 9px; padding: 6px 0;
+  font-family: var(--font-mono), monospace; font-size: 12px;
+  border-top: 1px solid var(--hair); color: var(--ink-dim);
+}
+.webhook-row:first-of-type { border-top: none; }
+.wh-method {
+  font-size: 10px; letter-spacing: 0.5px; text-transform: uppercase;
+  padding: 2px 7px; border-radius: 6px; border: 1px solid var(--hair); color: var(--faint);
+}
+.wh-method.v2 { color: var(--jade); border-color: rgba(111, 176, 151, 0.4); }
+.wh-method.v1 { color: var(--amber); border-color: rgba(231, 178, 76, 0.4); }
+.wh-type { color: var(--vermilion); }
+.wh-status { color: var(--ink); }
+.wh-tx { color: var(--faint); margin-left: auto; }

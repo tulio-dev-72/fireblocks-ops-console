@@ -11,6 +11,15 @@ import { usePersistentState } from "@/lib/usePersistentState";
 
 type Health = { configured: boolean; env: string } | null;
 
+type WebhookEvent = {
+  id: string;
+  eventType: string;
+  txId?: string;
+  status?: string;
+  method: "v2" | "v1" | "skipped" | null;
+  receivedAt: string;
+};
+
 function Mark() {
   return (
     <svg className="logo" viewBox="0 0 38 38" fill="none" aria-hidden>
@@ -25,6 +34,7 @@ export default function Home() {
   const [health, setHealth] = useState<Health>(null);
   const [vaults, setVaults] = useState<Vault[]>([]);
   const [txs, setTxs] = useState<Tx[]>([]);
+  const [webhookEvents, setWebhookEvents] = useState<WebhookEvent[]>([]);
   const [loadingV, setLoadingV] = useState(true);
   const [loadingT, setLoadingT] = useState(true);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -66,6 +76,16 @@ export default function Home() {
     }
   }, []);
 
+  const loadWebhookEvents = useCallback(async () => {
+    try {
+      const r = await fetch("/api/webhooks/events");
+      const d = await r.json();
+      if (r.ok && Array.isArray(d.events)) setWebhookEvents(d.events);
+    } catch {
+      /* keep last good */
+    }
+  }, []);
+
   useEffect(() => {
     fetch("/api/health")
       .then((r) => r.json())
@@ -84,9 +104,13 @@ export default function Home() {
 
   useEffect(() => {
     if (!health?.configured) return;
-    const id = setInterval(loadTxs, 6000);
+    loadWebhookEvents();
+    const id = setInterval(() => {
+      loadTxs();
+      loadWebhookEvents();
+    }, 6000);
     return () => clearInterval(id);
-  }, [health, loadTxs]);
+  }, [health, loadTxs, loadWebhookEvents]);
 
   const stats = useMemo(() => {
     const assets = new Set<string>();
@@ -136,6 +160,11 @@ export default function Home() {
         <InfoTip
           label="What does Connected mean?"
           content="Whether this server has a live link to the Fireblocks core API. Credentials live only on the server and are never sent to the browser. When connected, everything shown is read live from Fireblocks."
+        />
+        <span className="chip">Webhooks v2</span>
+        <InfoTip
+          label="What is the Webhooks v2 receiver?"
+          content="This console exposes POST /api/webhooks/fireblocks, a real Fireblocks Webhooks v2 receiver. It validates the Fireblocks-Webhook-Signature (a detached JWS) against the environment JWKS, with the legacy RSA-SHA512 signature as a fallback. Verified deliveries appear in the Activity tab."
         />
       </div>
     </div>
@@ -277,7 +306,28 @@ export default function Home() {
               onPickTargeted={pickTargeted}
             />
           ) : (
-            <TxFeed txs={txs} loading={loadingT} />
+            <>
+              {webhookEvents.length > 0 && (
+                <div className="webhook-feed">
+                  <div className="webhook-feed-head">
+                    <span>Verified webhook deliveries</span>
+                    <InfoTip
+                      label="About webhook deliveries"
+                      content="Fireblocks Webhooks v2 events received and signature-verified by this server. Stored in memory (best-effort) to prove the receiver is live; a production console would persist them to a database."
+                    />
+                  </div>
+                  {webhookEvents.slice(0, 5).map((e) => (
+                    <div key={e.id} className="webhook-row">
+                      <span className={`wh-method ${e.method ?? ""}`}>{e.method ?? "?"}</span>
+                      <span className="wh-type">{e.eventType}</span>
+                      {e.status && <span className="wh-status">{e.status}</span>}
+                      {e.txId && <span className="wh-tx">{e.txId.slice(0, 10)}…</span>}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <TxFeed txs={txs} loading={loadingT} />
+            </>
           )}
         </div>
 
