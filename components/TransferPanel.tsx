@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { type Vault } from "@/lib/types";
 import { assetTicker, fmtNum, positiveAssets } from "@/lib/format";
 import VaultSelect from "./VaultSelect";
+import InfoTip from "./InfoTip";
 
 type Target = "source" | "dest" | null;
 type Result =
@@ -99,19 +100,40 @@ export default function TransferPanel({
 
   return (
     <div className="panel">
-      <h3>New transfer</h3>
+      <h3>
+        New transfer{" "}
+        <InfoTip
+          label="What does this panel do?"
+          content="Submits a real transaction to the Fireblocks core API. The app only requests the transfer; Fireblocks policy decides whether it signs immediately, is held for approval, or is blocked."
+        />
+      </h3>
       <p className="route-hint">Pick from the dropdowns, the per-card buttons, or “pick from cards” then click a card.</p>
 
       <div className={`field ${targeting === "source" ? "armed-source" : ""}`}>
-        <label className="label-row"><span>From (source)</span><PickBtn which="source" /></label>
+        <label className="label-row">
+          <span>
+            From (source){" "}
+            <InfoTip
+              label="What is the source?"
+              content="The Fireblocks vault the assets move out of. Only funded vaults can be a source; funds leave MPC custody only after policy authorizes and Fireblocks signs."
+            />
+          </span>
+          <PickBtn which="source" />
+        </label>
         <VaultSelect vaults={vaults} value={source} onChange={setSource} placeholder="Select source vault…" requireFunds exclude={dest} />
       </div>
 
       <div className="route-arrow">↓</div>
 
-      <div className="seg">
-        <button className={mode === "vault" ? "on" : ""} onClick={() => setMode("vault")}>To vault</button>
-        <button className={mode === "external" ? "on" : ""} onClick={() => setMode("external")}>To address</button>
+      <div className="seg-row">
+        <div className="seg">
+          <button className={mode === "vault" ? "on" : ""} onClick={() => setMode("vault")}>To vault</button>
+          <button className={mode === "external" ? "on" : ""} onClick={() => setMode("external")}>To address</button>
+        </div>
+        <InfoTip
+          label="Vault vs address?"
+          content="“To vault” moves assets between two vaults in this workspace. “To address” sends to an external on-chain address. External destinations are exactly where allowlist and policy controls matter most."
+        />
       </div>
 
       {mode === "vault" ? (
@@ -128,7 +150,13 @@ export default function TransferPanel({
       )}
 
       <div className="field" style={{ marginTop: 16 }}>
-        <label>Asset</label>
+        <label>
+          Asset{" "}
+          <InfoTip
+            label="What is the asset?"
+            content="Which asset to move, scoped to what the source vault actually holds. Fireblocks identifies each asset by an ID (e.g. ETH_TEST5), shown with the available balance."
+          />
+        </label>
         <select className="select" value={asset} disabled={!source} onChange={(e) => setAsset(e.target.value)}>
           {srcAssets.length === 0 && <option value="">Pick a source vault first</option>}
           {srcAssets.map((a) => (
@@ -139,7 +167,13 @@ export default function TransferPanel({
 
       <div className="field">
         <label className="label-row">
-          <span>Amount</span>
+          <span>
+            Amount{" "}
+            <InfoTip
+              label="What about the amount?"
+              content="How much to transfer. Larger amounts and external destinations are the kind of conditions a Transaction Authorization Policy can route to approval or block before anything signs."
+            />
+          </span>
           {selAsset && <button className="max" onClick={() => setAmount(String(avail))}>max {fmtNum(avail)}</button>}
         </label>
         <input className="input" placeholder="0.00" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, ""))} />

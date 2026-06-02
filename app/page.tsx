@@ -6,6 +6,7 @@ import VaultGrid from "@/components/VaultGrid";
 import TransferPanel from "@/components/TransferPanel";
 import TxFeed from "@/components/TxFeed";
 import ThemeToggle from "@/components/ThemeToggle";
+import InfoTip from "@/components/InfoTip";
 import { usePersistentState } from "@/lib/usePersistentState";
 
 type Health = { configured: boolean; env: string } | null;
@@ -124,10 +125,18 @@ export default function Home() {
       <div className="hdr-right">
         <ThemeToggle />
         <span className="chip sandbox">{health?.env ?? "sandbox"}</span>
+        <InfoTip
+          label="What is the sandbox?"
+          content="A Fireblocks test workspace wired to testnets. Vaults, balances, and transfers are real Fireblocks API data with no real-world value, so it is safe to experiment."
+        />
         <span className="chip">
           <span className={`dot ${health?.configured ? "live" : "down"}`} />
           {health?.configured ? "Connected" : "Offline"}
         </span>
+        <InfoTip
+          label="What does Connected mean?"
+          content="Whether this server has a live link to the Fireblocks core API. Credentials live only on the server and are never sent to the browser. When connected, everything shown is read live from Fireblocks."
+        />
       </div>
     </div>
   );
@@ -181,19 +190,43 @@ export default function Home() {
       <div className="stats page-enter">
         <div className="stat">
           <div className="stat-num">{loadingV ? "-" : stats.vaults}</div>
-          <div className="stat-label">Vault accounts</div>
+          <div className="stat-label">
+            Vault accounts{" "}
+            <InfoTip
+              label="What are vault accounts?"
+              content="Fireblocks vault accounts in this workspace. Each holds assets in MPC custody, so no single private key ever exists to be stolen."
+            />
+          </div>
         </div>
         <div className="stat">
           <div className="stat-num">{loadingV ? "-" : stats.funded}</div>
-          <div className="stat-label">Funded vaults</div>
+          <div className="stat-label">
+            Funded vaults{" "}
+            <InfoTip
+              label="What are funded vaults?"
+              content="Vaults currently holding a positive balance of at least one asset. Only funded vaults can be used as a transfer source."
+            />
+          </div>
         </div>
         <div className="stat">
           <div className={`stat-num ${stats.pending > 0 ? "accent" : ""}`}>{loadingT ? "-" : stats.pending}</div>
-          <div className="stat-label">Pending approval</div>
+          <div className="stat-label">
+            Pending approval{" "}
+            <InfoTip
+              label="What is pending approval?"
+              content="Transfers held by the Fireblocks Transaction Authorization Policy, awaiting approval in the Fireblocks Console before they can sign and broadcast."
+            />
+          </div>
         </div>
         <div className="stat">
           <div className="stat-num">{loadingV ? "-" : stats.assets}</div>
-          <div className="stat-label">Assets tracked</div>
+          <div className="stat-label">
+            Assets tracked{" "}
+            <InfoTip
+              label="What are assets tracked?"
+              content="The number of distinct assets (e.g. ETH, MATIC, tokenized assets) held across all vaults in this workspace."
+            />
+          </div>
         </div>
       </div>
 
