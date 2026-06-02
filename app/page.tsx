@@ -173,15 +173,33 @@ export default function Home() {
         </p>
         <div className="intro-values">
           <div className="iv">
-            <div className="iv-h">MPC-secured keys</div>
+            <div className="iv-h">
+              MPC-secured keys{" "}
+              <InfoTip
+                label="More on MPC-secured keys"
+                content="Multi-party computation splits each signing key into shares held by separate parties. The full private key is never assembled in one place, so there is nothing for an attacker to steal and no single person can move funds alone."
+              />
+            </div>
             <div className="iv-b">Assets are protected by multi-party computation. No single private key ever exists to be stolen or leaked.</div>
           </div>
           <div className="iv">
-            <div className="iv-h">Policy-governed</div>
+            <div className="iv-h">
+              Policy-governed{" "}
+              <InfoTip
+                label="More on policy governance"
+                content="The Fireblocks Transaction Authorization Policy evaluates every transaction at the MPC layer, not in this app. Based on amount, asset, source, and destination it can auto-approve, hold for human approval, or block. Even a compromised app server cannot bypass it."
+              />
+            </div>
             <div className="iv-b">The Transaction Authorization Policy approves, holds, or blocks every transfer at the platform layer, not in this app.</div>
           </div>
           <div className="iv">
-            <div className="iv-h">One API, many chains</div>
+            <div className="iv-h">
+              One API, many chains{" "}
+              <InfoTip
+                label="More on multi-chain support"
+                content="A single Fireblocks integration abstracts dozens of blockchains and tokens. You submit a transfer with an asset ID and a destination; Fireblocks handles the chain-specific signing, fees, and broadcast."
+              />
+            </div>
             <div className="iv-b">Bitcoin, Ethereum, Polygon and tokenized assets all move through a single governed integration.</div>
           </div>
         </div>
