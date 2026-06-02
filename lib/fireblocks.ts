@@ -10,14 +10,29 @@ import {
 import type { Vault, Tx } from "./types";
 
 // ─── credential resolution (server runtime only) ──────────────────────────────
-function resolveSecret(): string | null {
-  const raw = process.env.FIREBLOCKS_SECRET_KEY;
-  if (raw && raw.trim().length > 0) {
-    // Allow PEM pasted on one line with literal \n separators.
-    return raw.includes("\\n") ? raw.split("\\n").join("\n") : raw;
+/** Normalize a PEM from env/file: strip wrapping quotes, fix \n and CRLF, trim. */
+function normalizePrivateKeyPem(raw: string): string {
+  let pem = raw.trim();
+  if (
+    (pem.startsWith('"') && pem.endsWith('"')) ||
+    (pem.startsWith("'") && pem.endsWith("'"))
+  ) {
+    pem = pem.slice(1, -1).trim();
   }
-  const path = process.env.FIREBLOCKS_SECRET_PATH ?? "./fireblocks_secret.key";
-  if (existsSync(path)) return readFileSync(path, "utf8");
+  return pem.replace(/\\n/g, "\n").replace(/\r\n/g, "\n");
+}
+
+function resolveSecret(): string | null {
+  // Canonical names align with the other apps; legacy names kept for back-compat.
+  const inline =
+    process.env.FIREBLOCKS_PRIVATE_KEY?.trim() || process.env.FIREBLOCKS_SECRET_KEY?.trim();
+  if (inline) return normalizePrivateKeyPem(inline);
+
+  const path =
+    process.env.FIREBLOCKS_SECRET_KEY_PATH?.trim() ||
+    process.env.FIREBLOCKS_SECRET_PATH?.trim() ||
+    "./fireblocks_secret.key";
+  if (existsSync(path)) return normalizePrivateKeyPem(readFileSync(path, "utf8"));
   return null;
 }
 
